@@ -1,25 +1,10 @@
-# Cílem této hry je umístit 3 hrací kameny (křížek X nebo kolečko O), a to horizontálně, vertikálně nebo diagonálně.
-# Jde o hru pro dva hráče (příp. počítač).
-#
-# Program bude obsahovat:
-# 1. Program pozdraví uživatele
-# 2. Vypíše v krátkosti pravidla hry
-# 3. Zobrazí hrací plochu
-# 4. Vyzve prvního hráče, aby zvolil pozici pro umístění hracího kamene
-# TODO 5. Pokud hráč zadá jiné číslo, než je nabídka hracího pole, program jej upozorní.
-# TODO 6. Pokud hráč zadá jiný vstup, než číselný, program jej opět upozorní.
-# TODO 7. Pokud se na vybraném poli nachází hrací kámen druhého hráče, program jej upozorní, že je pole obsazené
-# TODO 8. Jakmile hráč úspěšně vybere pole, zobrazíme nový stav hrací plochy
-# TODO 9. Program vyhodnocuje, jestli horizontálně/vertikálně/diagonálně není některý hrací kámen tříkrát.
-#         Pokud ano, vyhrává hráč, kterému tyto tři kameny patří
-# TODO 10. Pokud nezbývá žádné volné hrací pole a žádný hráč nevyhrál, jde o remízu.
-
 playground = ['7', '8', '9', '4', '5', '6', '1', '2', '3']
 empty_playground = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
 separator = '+---+---+---+'
 
-def print_playground(separator, empty_playground):
-    for _ in range(3):
+
+def print_playground():
+    for _ in empty_playground:
         print(separator)
         print(f"| {' | '. join(empty_playground[:3])} |")
         print(separator)
@@ -30,50 +15,83 @@ def print_playground(separator, empty_playground):
         break
 
 
-# print_playground(separator, playground)
-
-
 def main():
-    print_playground(separator, empty_playground)
+    print_playground()
+    prepinac = True
+    control_list = []
+    control_list_o = set()
+    control_list_x = set()
+    while ' ' in empty_playground and prepinac:
+        guess = is_input_suitable(enter='Player O | Please enter your move number: ')
+        if control_list_o == upperrow:
+            prepinac = False
+        for index, symbol in enumerate(playground):
+            if symbol == guess:
+                if guess in control_list:
+                    print('already taken')
+                else:
+                    empty_playground[index] = 'O'
+                    print_playground()
+                    control_list.append(guess)
+                    control_list_o.add(guess)
+        if ' ' not in empty_playground:
+            print('Tied')
 
+            break
+        if control_list_o == upperrow or control_list_o == midrow or control_list_o == lowrow\
+                or control_list_o == leftcol or control_list_o == midcol or control_list_o == rightcol\
+                or control_list_o == diag1 or control_list_o == diag2:
+            print('Player O won')
+            break
+        guess = is_input_suitable(enter='Player X | Please enter your move number: ')
+        for index, symbol in enumerate(playground):
+            if symbol == guess:
+                if guess in control_list:
+                    print('already taken')
+
+                else:
+                    empty_playground[index] = 'X'
+                    print_playground()
+                    control_list.append(guess)
+                    control_list_x.add(guess)
+        if ' ' not in empty_playground:
+            print('Tied')
+            break
+        if control_list_x == upperrow or control_list_x == midrow or control_list_x == lowrow \
+                or control_list_x == leftcol or control_list_x == midcol or control_list_x == rightcol \
+                or control_list_x == diag1 or control_list_x == diag2:
+            print('Player X won')
+            break
+    else:
+        print('Tied')
+
+
+upperrow = {'7', '8', '9'}
+midrow = {'4', '5', '6'}
+lowrow = {'1', '2', '3'}
+leftcol = {'7', '4', '1'}
+midcol = {'8', '5', '2'}
+rightcol = {'9', '6', '3'}
+diag1 = {'1', '5', '9'}
+diag2 = {'7', '5', '3'}
+
+
+def field_taken(guess, control_list):
+    return guess not in control_list
+
+
+def is_input_suitable(enter):
     while True:
-        put_stone_O = input('Player O | Please enter your move number: ')
-        for index, symbol in enumerate(playground):
-            if symbol == put_stone_O:
-                empty_playground[index] = 'O'
-                print_playground(separator, empty_playground)
-
-        put_stone_X = input('Player X | Please enter your move number: ')
-        for index, symbol in enumerate(playground):
-            if symbol == put_stone_X:
-                empty_playground[index] = 'X'
-                print_playground(separator, empty_playground)
+        guess = (input(enter))
+        if input_control(guess):
+            return guess
+        else:
+            print(f'!!! Wrong input !!!'.upper(), '\n'
+                  f'Must be number between 1-9')
 
 
-
-
-# def is_input_suitable(enter='Player O | Please enter your move number: '):
-#     while True:
-#         guess = (input(enter))
-#         if input_control(guess):
-#             return guess
-#         else:
-#             print(f'!!! Wrong input !!!'.upper(), '\n'
-#                   f'Must be number 1-9,')
-#             print(separator)
-#
-#
-# def input_control(guess) -> bool:
-#     return guess.isdigit() and guess in positions.values()
-
-
-
-
-
-
-
-
-
+def input_control(guess) -> bool:
+    return guess.isdigit() and guess in playground
 
 
 def intro():
@@ -92,6 +110,5 @@ Let's start the game'''
           )
 
 
-
-# intro()
+intro()
 main()
